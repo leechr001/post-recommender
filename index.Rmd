@@ -1,0 +1,56 @@
+---
+title: "Exploring Facebook Political Ads"
+author: "Christopher Lee, Andrew Hsu, Sean Oh, Michael Sun"
+date: "3/1/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+source("scripts/region_table.r")
+source("scripts/age_table.r")
+source("scripts/expand_targets.r")
+source("scripts/get_summary_info.r")
+source("scripts/expand_entities.r")
+source("scripts/Party_For_Top_20_Politics_Ads.r")
+source("scripts/Top_10_Politics_Ad.r")
+source("scripts/num_audience_dot_plot.r")
+df <- read.csv("data/sampled-facebook-ads.csv", stringsAsFactors = FALSE)
+ad_group_df <- read.csv("data/fb-ad-groups.csv", stringsAsFactors = FALSE)
+df_tar <- expand_targets(df)
+df_ent <- expand_entities(df)
+```
+
+## Introduction
+  With the rise of big data analytics companies are spending more and more money on advertising. This is because ads are now more influential than ever, combining psychological research with vast personal data. One of the most concerning things about this trend is its application in political advertising. In our last election cycle, Facebook was taken to court over its role in influencing the election. The ads were claimed to be so influential that they decided the outcome of the election as a whole. It would be interesting to study Facebook ads and political ads on an aggregate scale where we can hopefully generate some insights and reach a new understanding of this problem. Our data comes from three public data sets. Two from ProPublica and one from Google's BigQuery Platform. The titles of the data sets are "Political Ads by Facebook", "Facebooks Ad Categories", and "FCC Political Ads".
+  
+## Summary
+```{r, echo=FALSE, warning=FALSE}
+summary_info <- get_summary_info(df)
+```
+Across the `r summary_info$observations` rows of data that were analyed in this report, the leading advertiser was `r summary_info$advertiser` and `r summary_info$funder` funded the most prolific ads. This information is notable because the organization that funded the most ads turned out the be the International Rescue Committee, a humanitarian organization founded by Albert Einstein, with ads that are largely detatched from discernable political motivations. That being said, the leading advertiser, `r summary_info$advertiser`, is a politician. Overall, the percentage of analyzed ads that were determined to be political was about `r summary_info$political_percentage`%.
+
+## Who do Facebook Ads Target?
+```{r, echo=FALSE, warning=FALSE}
+kable(region_table(df_tar))
+```
+These two tables group the sample of 10,000 facebook political ads by targeted age group and targeted region (if it was listed, many NA values). This is important because we can use this to see who and where most advertisers are targetting. We notice immediately that California, Florida, and Texas stand out as significant states, which comes as no surprise as they have the most electoral votes. For age, it is apparent that most of the ads are targetted at "18 and older". This is of at least voting age. However because of the wide range of ages in this category it also might mean that age is no the primary way advertisers use to target ads. 
+  
+## Chart
+```{r, echo=FALSE, warning=FALSE}
+party_top_20_politics_ad(df)
+```
+
+This circle chart represents the political party affiliations of the 20 most frequently seen advertisements. A circle chart format makes this information abundantly clear, as the significance of the advertisement slices can be easily gleaned from this representation. While non profit ads make up almost half of all the top 20, the frequency of Republican ads (4.5%), which were all focused on Donald Trump, pales in comparison to the 39.9% appearance rate of Democrat ads. 
+
+```{r, echo=FALSE, warning=FALSE}
+top_10_politics_ad(df)
+```
+
+This bar chart reveals the distribution of advertisement funders by frequency. A bar chart is ideal for representing this subset of information because it conveys how many more ads are paid for by the International Rescue Committee compared to the 9 other organizations which lag far behind, placed from left to right on ad count frequency. While the difference in ad frequency of the 2nd highest frequency funder and the 9th is close to 50, it is effortlessly discernable that the ad count that the International Rescue Committee outputs is round 100 more than the runner up. 
+
+```{r, echo=FALSE, warning=FALSE}
+audience_of_campaign(ad_group_df)
+```
+This dot plot shows the number of audience that each political group targeted during the political campaign via social media advertisement. This graph ultimately hints at the efficiency and the effectiveness of the advertisements. A dot plot would be appropriate as it can clearly compare how a specific group did with others. With the graph, it is evident that “very conservative” group of the political spectrum wasn’t able to target audience than either “liberal” and “moderate” groups. “Conservative” and “very liberal” seems to have similar number of targeted audience.

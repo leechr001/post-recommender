@@ -1,0 +1,92 @@
+---
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Conclusion
+
+### Political Party Affililation
+
+One of the interesting insight we gained from the dataset is the distribution of the parties. Before gathering the data, we believe Donald Trump will be the first among all other politicans. However, it turns out that he was only the tenth place in total political ads collected on Facebook. Ironically, while non-profit organization occupied almost half of the top 20 ads, the frequency of Republican ads(4.5% of the top 20) were all focused on Donald Trump, pales in comparsion to the 39.9% apperance rate of Democrat ads. This data is collected before
+ 
+```{r, echo=FALSE}
+library(ggplot2)
+democrats <- 145 + 128 + 118 + 97 + 94 + 73 + 71 + 61
+  republicans <- 89
+  non_profit <- 255 + 126 + 121 + 91 + 84 + 77 + 70 + 68 + 62
+  Other <- 78 + 65
+  Totalads <- democrats + republicans + non_profit + Other
+  Party <-
+    data.frame(
+      Parties = c(
+        "Democrats",
+        "Republicans (Donald Trump)",
+        "Non Profit", "Other"
+      ),
+      Count = c(
+        democrats,
+        republicans,
+        non_profit,
+        Other
+      )
+    )
+  ggplot(Party, aes(x = "", y = Count, fill = factor(Parties))) +
+    geom_bar(width = 1, stat = "identity") +
+    geom_text(aes(label = paste(round(Count / Totalads * 100, 1), "%")),
+      position = position_stack(vjust = 0.5)
+    ) +
+    theme_classic() +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      axis.line = element_blank(),
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    ) +
+    labs(
+      fill = "Category",
+      x = NULL,
+      y = NULL,
+      title = "Parties of Top 20 Advertisement"
+    ) +
+    coord_polar("y")
+```
+
+### Who dominates the total political ads collected
+
+Interestingly, the leader of the ads spent on Facebook are not from the two parties. International Rescue Committee ends up the first in count / frequency of ads collected. The following bar chart shows us how many more ads are paid for by the Internaional Resuce Committee compared to the 9 other organizations / partieswhich lag far behindl. While the difference in ad count between the 2nd and 9th is close to 50, while International Rescue Committee has a frequency of 255 ads collected. This suggests that the ads from this "non-profit organization" exceeds the other political campaign ads for candidates. However, the dataset doesn't describe how much money is spent on each ads it's hard to conclude that Internation Resuce Committee Spent the most money. For example, an ads price can varies from the region, time, and all other factors. Thus, we can only conclude that International Rescue committee may spent the most effort on advertising, but not neccessary the most in money spent.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+df2 <- data.frame(
+  title = c("International Rescue Committee", "Beto O'Rourke", "Jay Inslee", "Planned Parenthood", "Planned Parenthood Action", "Kirsten Gillibrand", "Kamala Harris", "Elizabeth Warren", "ACLU", "Donald J. Trump"),
+  count = c(255, 145, 128, 126, 121, 118, 97, 94, 91, 89))
+library(treemap)
+graph <- treemap(
+  df2,
+  index = "title",
+  vSize = "count",
+  type = "index",
+  title = "Top 10 Political Ads"
+)
+```
+
+### Political subgroup audience size
+
+Liberal advertisements were the most prevalent ads, followed closely by moderate ones. Whereas those two categories recieved the largest audience, advertisements considered conservative or very conservative were seen a significant amount less. In fact, conservative advertisements, which are of the least polarizing conservative category, were only marginally more than very liberal advertisements, which should be the most polarizing liberal category. Of course, these statements are made under the assumption that the political beliefs of people in general would fall under moderate. As it stands, around 87 million liberal advertisements were distributed while 63 million conservative ones were, meaning that liberal advertisements were shown almsot 40% more frequently than conservative ones. This realization seems to be in line with the general assumptions that firstly, younger people tend to be more liberal, and also that younger people are more likely to use social media, so naturally, targeted advertisements distributed by Facebook are more likely to be conservative, but there may be a more interesting explanation for this specific dataset. While the liberal leaning advertisements promoted various candidates, in our current political climate with Donald Trump as the frontrunner of the Republican Party, almost all of the advertisements considered conservative or very conservative were specifically his promotional material. This means that a while this general discrepancy may nevertheless exist, factors specific to the current state of the US's main political parties furthur accentuates the differences in advertising, because the conservatives are focusing mainly on one candidate. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+source("../scripts/num_audience_dot_plot.r")
+ad_group_df <- data.frame(
+  type_of_pol=c("Very Liberal", "Liberal", "Moderate", "Conservative", "Very Conservative"),
+  audience_size=c(37276330, 50810520, 47392360, 37337720, 26322980),
+  name = c("US Politics (Very Liberal)", "US Politics (Liberal)",
+           "US Politics (Moderate)", "US Politics (Conservative)",
+           "US Politics (Very Conservative)"),
+  type = c("politics", "politics", "politics", "politics", "politics"))
+
+audience_of_campaign(ad_group_df)
+```
+
